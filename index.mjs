@@ -73,7 +73,7 @@ axios("https://api.thecatapi.com/v1/images/search", {}, {
     option.textContent = element.name;
 
   });
-  
+  buildCarousel();
 })();
 
 
@@ -104,55 +104,63 @@ axios("https://api.thecatapi.com/v1/images/search", {}, {
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
 
-breedSelect.addEventListener("change", function buildCarousel(evt) {
-  const catVal = evt.target.value
+// Part 2
+breedSelect.addEventListener("change", buildCarousel)
+
+async function buildCarousel() {
+  const catVal = breedSelect.value
   Carousel.clear();
-    function addToCarousel(catInfo) {
-      
-      catInfo.data.forEach((element) => {
-        
-        const newEle = Carousel.createCarouselItem(
+  function addToCarousel(catInfo) {
 
-          element.url,
-          breedSelect.value,
-          element.id
+    catInfo.data.forEach((element) => {
 
-        )
+      const newEle = Carousel.createCarouselItem(
 
-        Carousel.appendCarousel(newEle);
-      })
+        element.url,
+        breedSelect.value,
+        element.id
 
-      
-    }
+      )
 
-    async function dumpInfo() {
-      const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
-        
-        listOfBreeds.data.forEach(element => {
-          if(element.id === catVal) {
-            infoDump.innerHTML = `<h6>
+      Carousel.appendCarousel(newEle);
+    })
+  }
+
+  async function dumpInfo() {
+    const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
+
+    listOfBreeds.data.forEach(element => {
+      if (element.id === catVal) {
+        infoDump.innerHTML = `<h6>
 
             Description: ${element.description} <br/> <br/>
             Life_Span: ${element.life_span} <br/> <br/>
             Origin: ${element.origin} <br/> <br/>
 
             </h6>`
-          }
-        });
-        
-    }
+      }
+    });
 
-    dumpInfo();
-    
+  }
 
-    async function waiting() {
-      const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`)
+  dumpInfo();
+
+  async function waiting() {
+    const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`)
     // console.log(catInfo)
     addToCarousel(catInfo);
-    
-    }
-    waiting();
-})
+  
+  }
+  waiting();
+
+}
+
+
+
+
+
+
+
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
