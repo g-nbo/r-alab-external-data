@@ -127,16 +127,18 @@ axios("https://api.thecatapi.com/v1/images/search", {}, {
         option.textContent = element.name;
 
     });
-    buildCarousel();
+    buildCaro();
     Carousel.start();
 })();
 
 
-breedSelect.addEventListener("change", buildCarousel)
+breedSelect.addEventListener("change", buildCaro)
 
-async function buildCarousel() {
+async function buildCaro() {
     const catVal = breedSelect.value
     Carousel.clear();
+
+    
     function addToCarousel(catInfo) {
 
         catInfo.data.forEach((element) => {
@@ -173,7 +175,9 @@ async function buildCarousel() {
     dumpInfo();
 
     async function waiting() {
-        const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`)
+        const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`, {
+            onDownloadProgress: updateProgess
+        });
         // console.log(catInfo)
 
 
@@ -241,7 +245,10 @@ axios.interceptors.response.use(
  *   with for future projects.
  */
 
-
+function updateProgess(progressEvent) {
+    const percentage = (progressEvent.loaded * 100) / progressEvent.total;
+    progressBar.style.width = `${percentage}%`;
+}
 
 /**
  * 7. As a final element of progress indication, add the following to your axios interceptors:
