@@ -183,6 +183,8 @@ async function buildCarousel() {
  * - As an added challenge, try to do this on your own without referencing the lesson material.
  */
 
+
+
 /**
  * 6. Next, we'll create a progress bar to indicate the request is in progress.
  * - The progressBar element has already been created for you.

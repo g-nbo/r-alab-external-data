@@ -16,16 +16,16 @@ const API_KEY = "live_uvoSZa1Mc5WHBv9dEFTImpzBm0CVy1n9pZsyj70QBMLRHC5pRDPgpq7sUH
 
 
 axios("https://api.thecatapi.com/v1/images/search", {}, {
-  headers: {
-    'x-api-key': API_KEY
-  }
+    headers: {
+        'x-api-key': API_KEY
+    }
 })
-  .then((x) => {
+    .then((x) => {
 
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 
 
@@ -112,73 +112,81 @@ axios("https://api.thecatapi.com/v1/images/search", {}, {
  *   send it manually with all of your requests! You can also set a default base URL!
  */
 
+
 (async function initialLoad() {
     const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
-  
+
     listOfBreeds.data.forEach(element => {
-  
-      const option = document.createElement("option");
-  
-      breedSelect.appendChild(option);
-  
-      option.setAttribute("value", element.id)
-  
-      option.textContent = element.name;
-  
+
+        const option = document.createElement("option");
+
+        breedSelect.appendChild(option);
+
+        option.setAttribute("value", element.id)
+
+        option.textContent = element.name;
+
     });
     buildCarousel();
-  })();
+    Carousel.start();
+})();
 
 
-  breedSelect.addEventListener("change", buildCarousel)
+breedSelect.addEventListener("change", buildCarousel)
 
 async function buildCarousel() {
-  const catVal = breedSelect.value
-  Carousel.clear();
-  function addToCarousel(catInfo) {
+    const catVal = breedSelect.value
+    Carousel.clear();
+    function addToCarousel(catInfo) {
 
-    catInfo.data.forEach((element) => {
+        catInfo.data.forEach((element) => {
 
-      const newEle = Carousel.createCarouselItem(
+            const newEle = Carousel.createCarouselItem(
 
-        element.url,
-        breedSelect.value,
-        element.id
+                element.url,
+                breedSelect.value,
+                element.id
 
-      )
+            )
 
-      Carousel.appendCarousel(newEle);
-    })
-  }
+            Carousel.appendCarousel(newEle);
+        })
+    }
 
-  async function dumpInfo() {
-    const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
+    async function dumpInfo() {
+        const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
 
-    listOfBreeds.data.forEach(element => {
-      if (element.id === catVal) {
-        infoDump.innerHTML = `<h6>
+        listOfBreeds.data.forEach(element => {
+            if (element.id === catVal) {
+                infoDump.innerHTML = `<h6>
 
             Description: ${element.description} <br/> <br/>
             Life_Span: ${element.life_span} <br/> <br/>
             Origin: ${element.origin} <br/> <br/>
 
             </h6>`
-      }
-    });
+            }
+        });
 
-  }
+    }
 
-  dumpInfo();
+    dumpInfo();
 
-  async function waiting() {
-    const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`)
-    // console.log(catInfo)
-    addToCarousel(catInfo);
-  
-  }
-  waiting();
+    async function waiting() {
+        const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`)
+        // console.log(catInfo)
 
+
+
+
+        addToCarousel(catInfo);
+
+    }
+
+    waiting();
 }
+
+
 
 /**
  * 5. Add axios interceptors to log the time between request and response to the console.
@@ -186,6 +194,36 @@ async function buildCarousel() {
  * - Add a console.log statement to indicate when requests begin.
  * - As an added challenge, try to do this on your own without referencing the lesson material.
  */
+axios.interceptors.request.use((request) => {
+    progressBar.style.width = '0%'
+    console.log("Request sent.");
+    request.metadata = request.metadata || {};
+    request.metadata.startTime = new Date().getTime();
+    // console.log(request.metadata, request.metadata.startTime);
+    return request;
+}, (error) => {
+    console.log("Request Error.");
+    throw error;
+});
+
+
+
+axios.interceptors.response.use(
+    (response) => {
+        // Success: status 200 - 299
+          console.log("Successful response!");
+        response.config.metadata.endTime = new Date().getTime();
+        response.config.metadata.durationInMS = response.config.metadata.endTime - response.config.metadata.startTime;
+        console.log(`Request took ${response.config.metadata.durationInMS} milliseconds.`)
+        return response;
+    },
+    (error) => {
+        // Failure: anything outside of status 2XX
+        console.log("Unsuccessful response...");
+        throw error;
+    }
+);
+
 
 /**
  * 6. Next, we'll create a progress bar to indicate the request is in progress.
@@ -202,6 +240,8 @@ async function buildCarousel() {
  *   once or twice per request to this API. This is still a concept worth familiarizing yourself
  *   with for future projects.
  */
+
+
 
 /**
  * 7. As a final element of progress indication, add the following to your axios interceptors:
@@ -220,7 +260,7 @@ async function buildCarousel() {
  * - You can call this function by clicking on the heart at the top right of any image.
  */
 export async function favourite(imgId) {
-  // your code here
+    // your code here
 }
 
 /**
