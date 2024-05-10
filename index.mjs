@@ -60,9 +60,11 @@ axios("https://api.thecatapi.com/v1/images/search", {}, {
 // Part 1
 
 (async function initialLoad() {
-  const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
+  const response = await fetch(`https://api.thecatapi.com/v1/breeds`)
+  const listOfBreeds = await response.json();
+  console.log(listOfBreeds)
 
-  listOfBreeds.data.forEach(element => {
+  listOfBreeds.forEach(element => {
 
     const option = document.createElement("option");
 
@@ -112,7 +114,7 @@ async function buildCarousel() {
   Carousel.clear();
   function addToCarousel(catInfo) {
 
-    catInfo.data.forEach((element) => {
+    catInfo.forEach((element) => {
 
       const newEle = Carousel.createCarouselItem(
 
@@ -127,9 +129,10 @@ async function buildCarousel() {
   }
 
   async function dumpInfo() {
-    const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
+    const response = await fetch(`https://api.thecatapi.com/v1/breeds`)
+    const listOfBreeds = await response.json();
 
-    listOfBreeds.data.forEach(element => {
+    listOfBreeds.forEach(element => {
       if (element.id === catVal) {
         infoDump.innerHTML = `<h6>
 
@@ -146,10 +149,11 @@ async function buildCarousel() {
   dumpInfo();
 
   async function waiting() {
-    const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`)
+    const response = await fetch(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`)
+    const catInfo = await response.json();
     // console.log(catInfo)
     addToCarousel(catInfo);
-  
+
   }
   waiting();
 
