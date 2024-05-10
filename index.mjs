@@ -13,6 +13,22 @@ const getFavouritesBtn = document.getElementById("getFavouritesBtn");
 // Step 0: Store your API key here for reference and easy access.
 const API_KEY = "live_uvoSZa1Mc5WHBv9dEFTImpzBm0CVy1n9pZsyj70QBMLRHC5pRDPgpq7sUHsNO7Pe";
 
+
+
+axios("https://api.thecatapi.com/v1/images/search", {}, {
+  headers: {
+    'x-api-key': API_KEY
+  }
+})
+  .then((x) => {
+
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+
+
 // fetch("https://api.thecatapi.com/v1/images/search")
 //   .then((x) => {
 //     console.log(x);
@@ -22,13 +38,14 @@ const API_KEY = "live_uvoSZa1Mc5WHBv9dEFTImpzBm0CVy1n9pZsyj70QBMLRHC5pRDPgpq7sUH
 //     console.log(err)
 //   })
 
-axios("https://api.thecatapi.com/v1/images/search")
-  .then((x) => {
-    console.log(x);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// axios("https://api.thecatapi.com/v1/images/search")
+//   .then((x) => {
+//     console.log(x);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
+
 
 
 /**
@@ -40,35 +57,36 @@ axios("https://api.thecatapi.com/v1/images/search")
  * This function should execute immediately.
  */
 
-async function initialLoad() {
-  const apiData = await axios(`https://api.thecatapi.com/v1/breeds`);
-  
-  apiData.data.forEach(element => {
-    const options = document.createElement("options");
-    breedSelect.appendChild(options);
-    options.setAttribute("class", element.id)
-    options.textContent = element.name;
+// Part 1
+
+(async function initialLoad() {
+  const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
+
+  listOfBreeds.data.forEach(element => {
+
+    const option = document.createElement("option");
+
+    breedSelect.appendChild(option);
+
+    option.setAttribute("value", element.id)
+
+    option.textContent = element.name;
+
   });
-  console.log(apiData.data);
-  return apiData.data
-}
-
-initialLoad().then((x) => {
   
-  // console.log(x)
-});
+})();
 
-// initialLoad();
 
-async function myFunctions2() {
-  let apiData = await fetch("https://api.thecatapi.com/v1/images/search?limit=10");
-  let jsonData = await apiData.json();
-  console.log(jsonData);
-}
 
-myFunctions2().then((x) => {
-  console.log(x);
-});
+// async function myFunctions2() {
+//   let listOfBreeds = await fetch("https://api.thecatapi.com/v1/images/search?limit=10");
+//   let jsonData = await listOfBreeds.json();
+//   // console.log(jsonData);
+// }
+
+// myFunctions2().then((x) => {
+//   console.log(x);
+// });
 
 
 /**
@@ -85,6 +103,56 @@ myFunctions2().then((x) => {
  * - Each new selection should clear, re-populate, and restart the Carousel.
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
+
+breedSelect.addEventListener("change", function buildCarousel(evt) {
+  const catVal = evt.target.value
+  Carousel.clear();
+    function addToCarousel(catInfo) {
+      
+      catInfo.data.forEach((element) => {
+        
+        const newEle = Carousel.createCarouselItem(
+
+          element.url,
+          breedSelect.value,
+          element.id
+
+        )
+
+        Carousel.appendCarousel(newEle);
+      })
+
+      
+    }
+
+    async function dumpInfo() {
+      const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
+        
+        listOfBreeds.data.forEach(element => {
+          if(element.id === catVal) {
+            infoDump.innerHTML = `<h6>
+
+            Description: ${element.description} <br/> <br/>
+            Life_Span: ${element.life_span} <br/> <br/>
+            Origin: ${element.origin} <br/> <br/>
+
+            </h6>`
+          }
+        });
+        
+    }
+
+    dumpInfo();
+    
+
+    async function waiting() {
+      const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`)
+    // console.log(catInfo)
+    addToCarousel(catInfo);
+    
+    }
+    waiting();
+})
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
