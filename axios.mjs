@@ -121,11 +121,11 @@ axios("https://api.thecatapi.com/v1/images/search", {}, {
         const option = document.createElement("option");
 
         breedSelect.appendChild(option);
-
+        
         option.setAttribute("value", element.id)
 
         option.textContent = element.name;
-
+        
     });
     buildCaro();
     Carousel.start();
@@ -143,15 +143,18 @@ async function buildCaro() {
 
         catInfo.data.forEach((element) => {
 
-            const newEle = Carousel.createCarouselItem(
+            // const newEle = Carousel.createCarouselItem(
 
-                element.url,
-                breedSelect.value,
-                element.id
+            //     element.url,
+            //     breedSelect.value,
+            //     element.id
 
-            )
+            // )
 
-            Carousel.appendCarousel(newEle);
+            const carouselCard = document.querySelector("carousel-inner card")
+            // carouselCard.appendChild(newEle)
+            // Carousel.appendCarousel(newEle);
+            Carousel.start();
         })
     }
 
@@ -163,7 +166,7 @@ async function buildCaro() {
                 infoDump.innerHTML = `<h6>
 
             Description: ${element.description} <br/> <br/>
-            Life_Span: ${element.life_span} <br/> <br/>
+            Life Span: ${element.life_span} <br/> <br/>
             Origin: ${element.origin} <br/> <br/>
 
             </h6>`
@@ -178,16 +181,13 @@ async function buildCaro() {
         const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`, {
             onDownloadProgress: updateProgess
         });
-        // console.log(catInfo)
-
-
-
 
         addToCarousel(catInfo);
 
     }
 
     waiting();
+    
 }
 
 

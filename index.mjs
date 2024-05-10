@@ -146,7 +146,7 @@ async function buildCarousel() {
   dumpInfo();
 
   async function waiting() {
-    const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`)
+    const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=30&breed_ids=${catVal}`)
     // console.log(catInfo)
     addToCarousel(catInfo);
   
