@@ -199,6 +199,7 @@ async function buildCaro() {
  * - As an added challenge, try to do this on your own without referencing the lesson material.
  */
 axios.interceptors.request.use((request) => {
+    document.body.style.cursor = 'progress'
     progressBar.style.width = '0%'
     console.log("Request sent.");
     request.metadata = request.metadata || {};
@@ -215,6 +216,7 @@ axios.interceptors.request.use((request) => {
 axios.interceptors.response.use(
     (response) => {
         // Success: status 200 - 299
+        document.body.style.cursor = ''
           console.log("Successful response!");
         response.config.metadata.endTime = new Date().getTime();
         response.config.metadata.durationInMS = response.config.metadata.endTime - response.config.metadata.startTime;
