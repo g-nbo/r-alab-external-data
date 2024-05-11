@@ -131,7 +131,8 @@ async function buildCarousel() {
 
     listOfBreeds.data.forEach(element => {
       if (element.id === catVal) {
-        infoDump.innerHTML = `<h6>
+        infoDump.innerHTML =
+          `<h6>
 
             Description: ${element.description} <br/> <br/>
             Life_Span: ${element.life_span} <br/> <br/>
@@ -149,7 +150,7 @@ async function buildCarousel() {
     const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=30&breed_ids=${catVal}`)
     // console.log(catInfo)
     addToCarousel(catInfo);
-  
+
   }
   waiting();
 }

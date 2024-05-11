@@ -112,23 +112,25 @@ axios("https://api.thecatapi.com/v1/images/search", {}, {
  *   send it manually with all of your requests! You can also set a default base URL!
  */
 
+axios.defaults.baseURL = "https://api.thecatapi.com/v1";
+axios.defaults.headers.common["x-api-key"] = API_KEY;
 
 (async function initialLoad() {
-    const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
+    const listOfBreeds = await axios(`/breeds`);
 
     listOfBreeds.data.forEach(element => {
 
         const option = document.createElement("option");
 
         breedSelect.appendChild(option);
-        
+
         option.setAttribute("value", element.id)
 
         option.textContent = element.name;
-        
+
     });
     buildCaro();
-    Carousel.start();
+
 })();
 
 
@@ -138,28 +140,25 @@ async function buildCaro() {
     const catVal = breedSelect.value
     Carousel.clear();
 
-    
+
     function addToCarousel(catInfo) {
 
         catInfo.data.forEach((element) => {
 
-            // const newEle = Carousel.createCarouselItem(
+            const newEle = Carousel.createCarouselItem(
 
-            //     element.url,
-            //     breedSelect.value,
-            //     element.id
+                element.url,
+                breedSelect.value,
+                element.id,
 
-            // )
-
-            const carouselCard = document.querySelector("carousel-inner card")
-            // carouselCard.appendChild(newEle)
-            // Carousel.appendCarousel(newEle);
+            )
+            Carousel.appendCarousel(newEle);
             Carousel.start();
         })
     }
 
     async function dumpInfo() {
-        const listOfBreeds = await axios(`https://api.thecatapi.com/v1/breeds`);
+        const listOfBreeds = await axios(`/breeds`);
 
         listOfBreeds.data.forEach(element => {
             if (element.id === catVal) {
@@ -178,7 +177,7 @@ async function buildCaro() {
     dumpInfo();
 
     async function waiting() {
-        const catInfo = await axios(`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${catVal}`, {
+        const catInfo = await axios(`/images/search?limit=30&breed_ids=${catVal}`, {
             onDownloadProgress: updateProgess
         });
 
@@ -187,7 +186,7 @@ async function buildCaro() {
     }
 
     waiting();
-    
+
 }
 
 
@@ -217,7 +216,7 @@ axios.interceptors.response.use(
     (response) => {
         // Success: status 200 - 299
         document.body.style.cursor = ''
-          console.log("Successful response!");
+        console.log("Successful response!");
         response.config.metadata.endTime = new Date().getTime();
         response.config.metadata.durationInMS = response.config.metadata.endTime - response.config.metadata.startTime;
         console.log(`Request took ${response.config.metadata.durationInMS} milliseconds.`)
@@ -268,9 +267,33 @@ function updateProgess(progressEvent) {
  *   you delete that favourite using the API, giving this function "toggle" functionality.
  * - You can call this function by clicking on the heart at the top right of any image.
  */
+
 export async function favourite(imgId) {
     // your code here
+    const gotFavorited = await axios(`/favourites?image_id=${imgId}`, {
+        "content-type": "application/json",
+    })
+
+    if (!gotFavorited.data[0]) {
+        await axios.post("/favourites", {
+            "image_id": imgId,
+        })
+            .catch((err) => {
+                console.log(err)
+            })
+        console.log("There's nothing in favorites", gotFavorited)
+    } else {
+        await axios.delete(`/favourites/${gotFavorited.data[0].id}`, {
+            "content-type": "application/json",
+        })
+            .catch((err) => {
+                console.log(err)
+            })
+        console.log("there's something in got favorited", gotFavorited)
+    }
+
 }
+
 
 /**
  * 9. Test your favourite() function by creating a getFavourites() function.
@@ -282,6 +305,25 @@ export async function favourite(imgId) {
  *    repeat yourself in this section.
  */
 
+getFavouritesBtn.addEventListener("click", getFavorites)
+
+async function getFavorites() {
+    // console.log('getFavorites ran')
+
+    // const favoriteCats = await axios(`/favourites`, {
+    //     headers: { 'x-api-key': API_KEY },
+    // })
+
+    // const res = await axios(`https://api.thecatapi.com/v1/favourites`, {
+    //     headers: {
+    //         "content-type": "application/json",
+    //         'x-api-key': API_KEY,
+    //     },
+    // })
+
+    // console.log(res)
+
+}
 /**
  * 10. Test your site, thoroughly!
  * - What happens when you try to load the Malayan breed?
