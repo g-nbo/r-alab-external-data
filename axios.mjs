@@ -115,7 +115,7 @@ axios("https://api.thecatapi.com/v1/images/search", {}, {
 axios.defaults.baseURL = "https://api.thecatapi.com/v1";
 axios.defaults.headers.common["x-api-key"] = API_KEY;
 
-(async function initialLoad() {
+async function initialLoad() {
     const listOfBreeds = await axios(`/breeds`);
 
     listOfBreeds.data.forEach(element => {
@@ -129,37 +129,37 @@ axios.defaults.headers.common["x-api-key"] = API_KEY;
         option.textContent = element.name;
 
     });
-    buildCaro();
 
-})();
+    const breed = breedSelect.value;
+    const response = await axios(`/images/search?limit=25&breed_ids=${breed}`)
+    buildCaro(response.data);
 
+};
+initialLoad();
 
-breedSelect.addEventListener("change", buildCaro)
+breedSelect.addEventListener("change", initialLoad)
 
-async function buildCaro() {
+async function buildCaro(cats) {
+    console.log("building caro")
     const catVal = breedSelect.value
     Carousel.clear();
 
-
-    function addToCarousel(catInfo) {
-
-        catInfo.data.forEach((element) => {
+        cats.forEach((element) => {
 
             const newEle = Carousel.createCarouselItem(
 
-                element.url,
+                element.url || element.image.url,
                 breedSelect.value,
                 element.id,
 
             )
+            
             Carousel.appendCarousel(newEle);
             Carousel.start();
         })
-    }
+    
 
-    async function dumpInfo() {
         const listOfBreeds = await axios(`/breeds`);
-
         listOfBreeds.data.forEach(element => {
             if (element.id === catVal) {
                 infoDump.innerHTML = `<h6>
@@ -171,22 +171,6 @@ async function buildCaro() {
             </h6>`
             }
         });
-
-    }
-
-    dumpInfo();
-
-    async function waiting() {
-        const catInfo = await axios(`/images/search?limit=30&breed_ids=${catVal}`, {
-            onDownloadProgress: updateProgess
-        });
-
-        addToCarousel(catInfo);
-
-    }
-
-    waiting();
-
 }
 
 
@@ -308,20 +292,20 @@ export async function favourite(imgId) {
 getFavouritesBtn.addEventListener("click", getFavorites)
 
 async function getFavorites() {
-    // console.log('getFavorites ran')
+    console.log('getFavorites ran')
 
-    // const favoriteCats = await axios(`/favourites`, {
-    //     headers: { 'x-api-key': API_KEY },
+    const favoriteCats = await axios(`/favourites`, {
+
+    })
+
+    // favoriteCats.data.forEach((cat) => {
+    //     Carousel.clear();
+    //     buildCaro(cat);
     // })
 
-    // const res = await axios(`https://api.thecatapi.com/v1/favourites`, {
-    //     headers: {
-    //         "content-type": "application/json",
-    //         'x-api-key': API_KEY,
-    //     },
-    // })
 
-    // console.log(res)
+    buildCaro(favoriteCats.data);
+    // console.log(favoriteCats.data)
 
 }
 /**
