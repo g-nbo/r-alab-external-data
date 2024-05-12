@@ -132,6 +132,7 @@ async function initialLoad() {
 
     const breed = breedSelect.value;
     const response = await axios(`/images/search?limit=25&breed_ids=${breed}`)
+
     buildCaro(response.data);
 
 };
@@ -257,7 +258,7 @@ export async function favourite(imgId) {
     const gotFavorited = await axios(`/favourites?image_id=${imgId}`, {
         "content-type": "application/json",
     })
-
+    console.log(gotFavorited)
     if (!gotFavorited.data[0]) {
         await axios.post("/favourites", {
             "image_id": imgId,
@@ -265,7 +266,6 @@ export async function favourite(imgId) {
             .catch((err) => {
                 console.log(err)
             })
-        console.log("There's nothing in favorites", gotFavorited)
     } else {
         await axios.delete(`/favourites/${gotFavorited.data[0].id}`, {
             "content-type": "application/json",
@@ -273,7 +273,6 @@ export async function favourite(imgId) {
             .catch((err) => {
                 console.log(err)
             })
-        console.log("there's something in got favorited", gotFavorited)
     }
 
 }
@@ -292,20 +291,15 @@ export async function favourite(imgId) {
 getFavouritesBtn.addEventListener("click", getFavorites)
 
 async function getFavorites() {
-    console.log('getFavorites ran')
 
     const favoriteCats = await axios(`/favourites`, {
 
     })
-
-    // favoriteCats.data.forEach((cat) => {
-    //     Carousel.clear();
-    //     buildCaro(cat);
-    // })
-
+    .catch((err) => {
+        console.log(err)
+    })
 
     buildCaro(favoriteCats.data);
-    // console.log(favoriteCats.data)
 
 }
 /**
